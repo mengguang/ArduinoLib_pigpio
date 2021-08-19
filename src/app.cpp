@@ -2,13 +2,21 @@
 #include <Wire.h>
 #include "SHTSensor.h"
 #include "SSD1306Wire.h"
+#include "SSD1306Spi.h"
 
 const int led = P7;
+const int key = P0;
 
 SHTSensor sht(SHTSensor::SHTC3);
 
-#define OLED_I2C_ADDR 0x3c
-SSD1306Wire display(OLED_I2C_ADDR);
+// #define OLED_I2C_ADDR 0x3c
+// SSD1306Wire display(OLED_I2C_ADDR);
+
+#define OLED_CS P27
+#define OLED_RST P26
+#define OLED_DC P23
+
+SSD1306Spi display(OLED_RST, OLED_DC, OLED_CS);
 
 void drawFontFaceDemo()
 {
@@ -37,18 +45,20 @@ void displaySensorData(double humidity, double temperature)
 
 void setup()
 {
-    // SPI.begin();
-    Wire.begin();
+    SPI.begin();
+    // Wire.begin();
 
     pinMode(led, OUTPUT);
+    pinMode(key, INPUT);
 
     Serial.begin(115200);
-    delay(1000);
+    // delay(1000);
     sht.init();
     display.init();
     // display.flipScreenVertically();
     // display.setFont(ArialMT_Plain_10);
     drawFontFaceDemo();
+    // delay(100);
 }
 
 void loop()
@@ -70,4 +80,8 @@ void loop()
     delay(100);
     digitalWrite(led, LOW);
     delay(100);
+    if (digitalRead(key) == LOW)
+    {
+        Serial.println("key pressed!");
+    }
 }

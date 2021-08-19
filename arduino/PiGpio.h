@@ -119,7 +119,65 @@ public:
         }
     }
 
+    bool spi_begin()
+    {
+        unsigned int spi_channel = 0;
+        unsigned int spi_baud = 4'000'000;
+        unsigned int spi_flags = 0;
+        handle_spi = ::spi_open(instance, spi_channel, spi_baud, spi_flags);
+        if (handle_spi >= 0)
+        {
+            return true;
+        }
+        else
+        {
+            printf("spi_open error: %d\n", handle_spi);
+            handle_spi = -1;
+            return false;
+        }
+    }
+
+    void spi_end()
+    {
+        if (handle_spi >= 0)
+        {
+            ::spi_close(instance, handle_spi);
+            handle_spi = -1;
+        }
+    }
+
+    int spi_transfer(uint8_t *tx_data, uint8_t *rx_data, uint32_t length)
+    {
+        if (handle_spi < 0)
+        {
+            return -1;
+        }
+        auto n = ::spi_xfer(instance, handle_spi, (char *)tx_data, (char *)rx_data, length);
+        return n;
+    }
+
+    int spi_write(uint8_t *tx_data, uint32_t length)
+    {
+        if (handle_spi < 0)
+        {
+            return -1;
+        }
+        auto n = ::spi_write(instance, handle_spi, (char *)tx_data, length);
+        return n;
+    }
+
+    int spi_read(uint8_t *rx_data, uint32_t length)
+    {
+        if (handle_spi < 0)
+        {
+            return -1;
+        }
+        auto n = ::spi_read(instance, handle_spi, (char *)rx_data, length);
+        return n;
+    }
+
 private:
     int instance = -1;
+    int handle_spi = -1;
     static PiGpio *pig;
 };
