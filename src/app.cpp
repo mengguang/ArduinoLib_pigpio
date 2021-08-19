@@ -55,7 +55,7 @@ void setup()
     // delay(1000);
     sht.init();
     display.init();
-    // display.flipScreenVertically();
+    display.flipScreenVertically();
     // display.setFont(ArialMT_Plain_10);
     drawFontFaceDemo();
     // delay(100);
